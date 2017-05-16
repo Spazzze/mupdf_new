@@ -1,21 +1,27 @@
 package com.artifex.mupdf.fitz;
 
-public class PDFDocument extends Document
+public class PDFDocument
 {
-	private static native long newNative();
-
-	protected PDFDocument(long p) {
-		super(p);
+	static {
+		Context.init();
 	}
 
-	public PDFDocument() {
-		super(newNative());
+	private long pointer;
+
+	protected native void finalize();
+
+	public void destroy() {
+		finalize();
+		pointer = 0;
 	}
 
-	public boolean isPDF() {
-		return true;
+	private PDFDocument(long p) {
+		pointer = p;
 	}
 
+	public native Document toDocument();
+
+	public native int countPages();
 	public native PDFObject findPage(int at);
 
 	public native PDFObject getTrailer();
@@ -96,4 +102,5 @@ public class PDFDocument extends Document
 	public native boolean hasUnsavedChanges();
 	public native boolean canBeSavedIncrementally();
 	public native int save(String filename, String options);
+
 }

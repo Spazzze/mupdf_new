@@ -1,68 +1,76 @@
 package com.artifex.mupdf.fitz;
 
-public class Document
-{
-	static {
-		Context.init();
-	}
+public class Document {
+    static {
+        Context.init();
+    }
 
-	public static final String META_FORMAT = "format";
-	public static final String META_ENCRYPTION = "encryption";
-	public static final String META_INFO_AUTHOR = "info:Author";
-	public static final String META_INFO_TITLE = "info:Title";
+    public static final String META_FORMAT = "format";
+    public static final String META_ENCRYPTION = "encryption";
+    public static final String META_INFO_AUTHOR = "info:Author";
+    public static final String META_INFO_TITLE = "info:Title";
 
-	protected long pointer;
-	protected String path; /* for proofing */
+    private long pointer;
 
-	protected native void finalize();
+    protected native void finalize();
 
-	public void destroy() {
-		finalize();
-		pointer = 0;
-	}
+    public void destroy() {
+        finalize();
+        pointer = 0;
+    }
 
-	protected Document(long p) {
-		pointer = p;
-	}
+    private native long newNativeWithPath(String filename);
 
-	protected native static Document openNativeWithPath(String filename);
-	protected native static Document openNativeWithBuffer(byte buffer[], String magic);
+    private native long newNativeWithBuffer(byte buffer[], String magic);
+    // private native long newNativeWithRandomAccessFile(RandomAccessFile file, String magic);
 
-	public static Document openDocument(String filename) {
-		Document doc = openNativeWithPath(filename);
-		doc.path = filename;
-		return doc;
-	}
+    private String mPath = null;
 
-	public static Document openDocument(byte buffer[], String magic) {
-		return openNativeWithBuffer(buffer, magic);
-	}
+    public String getPath() {
+        return mPath;
+    }
 
-	public static native boolean recognize(String magic);
+    public Document(String filename) {
+        mPath = filename;
+        pointer = newNativeWithPath(filename);
+    }
 
-	public native boolean needsPassword();
-	public native boolean authenticatePassword(String password);
+    public Document(byte buffer[], String magic) {
+        pointer = newNativeWithBuffer(buffer, magic);
+    }
 
-	public native int countPages();
-	public native Page loadPage(int number);
-	public native Outline[] loadOutline();
-	public native String getMetaData(String key);
-	public native boolean isReflowable();
-	public native void layout(float width, float height, float em);
+    private Document(long p) {
+        pointer = p;
+    }
 
-	public native long makeBookmark(int page);
-	public native int findBookmark(long mark);
+    public native boolean needsPassword();
 
-	public native boolean isUnencryptedPDF();
+    public native boolean authenticatePassword(String password);
 
-	public boolean isPDF() {
-		return false;
-	}
+    public native int countPages();
 
-	public String getPath() { return path; }
-	protected native String proofNative (String currentPath, String printProfile, String displayProfile, int resolution);
-	public String makeProof (String currentPath, String printProfile, String displayProfile, int resolution) {
-		String proofFile = proofNative( currentPath,  printProfile,  displayProfile,  resolution);
-		return proofFile;
-	}
+    public native Page loadPage(int number);
+
+    public native Outline[] loadOutline();
+
+    public native String getMetaData(String key);
+
+    public native boolean isReflowable();
+
+    public native void layout(float width, float height, float em);
+
+    public native boolean isUnencryptedPDF();
+
+    public native PDFDocument toPDFDocument();
+
+    public boolean isPDF() {
+        return toPDFDocument() != null;
+    }
+
+    public String makeProof(String currentPath, String printProfile, String displayProfile, int resolution) {
+        String proofFile = proofNative(currentPath, printProfile, displayProfile, resolution);
+        return proofFile;
+    }
+
+    public native String proofNative(String currentPath, String printProfile, String displayProfile, int resolution);
 }

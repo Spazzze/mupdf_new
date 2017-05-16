@@ -42,6 +42,8 @@ public class StrokeState
 		pointer = newNative(startCap, dashCap, endCap, lineJoin, lineWidth, miterLimit, dashPhase, dash);
 	}
 
+	public native void adjustRectForStroke(Rect rect, Matrix ctm);
+
 	public native int getStartCap();
 	public native int getDashCap();
 	public native int getEndCap();

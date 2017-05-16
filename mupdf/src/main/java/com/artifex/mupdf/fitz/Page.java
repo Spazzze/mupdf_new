@@ -11,7 +11,7 @@ public class Page
 		pointer = 0;
 	}
 
-	protected Page(long p) {
+	private Page(long p) {
 		pointer = p;
 	}
 

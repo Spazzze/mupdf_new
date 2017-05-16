@@ -1,24 +1,27 @@
 package com.artifex.mupdf.fitz;
 
-public class Annotation
-{
-	private long pointer;
+public class Annotation {
 
-	protected native void finalize();
+    private long pointer;
 
-	public void destroy() {
-		finalize();
-		pointer = 0;
-	}
+    protected native void finalize();
 
-	protected Annotation(long p) {
-		pointer = p;
-	}
+    public void destroy() {
+        finalize();
+        pointer = 0;
+    }
 
-	public native void run(Device dev, Matrix ctm, Cookie cookie);
-	public native Pixmap toPixmap(Matrix ctm, ColorSpace colorspace, boolean alpha);
-	public native Rect getBounds();
-	public native DisplayList toDisplayList();
+    private Annotation(long p) {
+        pointer = p;
+    }
 
-	private native long advance();
+    public native void run(Device dev, Matrix ctm, Cookie cookie);
+
+    public native Pixmap toPixmap(Matrix ctm, ColorSpace colorspace, boolean alpha);
+
+    public native Rect getBounds();
+
+    public native DisplayList toDisplayList();
+
+    private native long advance();
 }
